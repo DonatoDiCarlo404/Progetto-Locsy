@@ -37,12 +37,10 @@ const segnalazioneSchema = new mongoose.Schema({
   coordinate: {
     type: {
       type: String,
-      enum: ['Point'],
-      default: 'Point'
+      enum: ['Point']
     },
     coordinates: {
-      type: [Number], // [longitude, latitude]
-      required: false
+      type: [Number] // [longitude, latitude]
     }
   },
   foto: [{
@@ -74,8 +72,8 @@ const segnalazioneSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Index geospaziale per query basate sulla posizione
-segnalazioneSchema.index({ coordinate: '2dsphere' });
+// Index geospaziale per query basate sulla posizione (sparse = ignora documenti senza coordinate)
+segnalazioneSchema.index({ coordinate: '2dsphere' }, { sparse: true });
 
 // Index per filtrare per stato e data
 segnalazioneSchema.index({ stato: 1, createdAt: -1 });

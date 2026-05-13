@@ -1,0 +1,563 @@
+{
+  "info": {
+    "name": "Locsy API - Complete Collection",
+    "description": "Collection completa per testare tutte le API di Locsy\n\n**Setup:**\n1. Registrati come utente normale\n2. Copia il token JWT\n3. Incollalo nella variabile {{authToken}}\n4. Testa le route autenticate\n5. Crea un utente admin nel DB\n6. Login come admin e testa route admin\n\n**Variabili:**\n- baseUrl: http://localhost:5000\n- authToken: (inserire dopo login)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "0. Health Check",
+      "item": [
+        {
+          "name": "Root",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"]
+            }
+          }
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "health"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. Auth",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('authToken', response.token);",
+                  "    console.log('Token salvato:', response.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Mario\",\n  \"cognome\": \"Rossi\",\n  \"email\": \"mario.rossi@test.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('authToken', response.token);",
+                  "    console.log('Token salvato:', response.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"mario.rossi@test.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{authToken}}"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Notizie",
+      "item": [
+        {
+          "name": "Get All Notizie",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/notizie",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notizie"]
+            }
+          }
+        },
+        {
+          "name": "Create Notizia (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{authToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titolo\": \"Nuova pista ciclabile inaugurata\",\n  \"contenuto\": \"Il Comune è orgoglioso di annunciare l'apertura della nuova pista ciclabile lungo il fiume. L'inaugurazione si terrà sabato prossimo.\",\n  \"categoria\": \"Viabilità\",\n  \"pubblicata\": true,\n  \"inEvidenza\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/notizie",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notizie"]
+            }
+          }
+        },
+        {
+          "name": "Like Notizia",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{authToken}}"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/notizie/:id/like",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notizie", ":id", "like"],
+              "variable": [{"key": "id", "value": "NOTIZIA_ID"}]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Eventi",
+      "item": [
+        {
+          "name": "Get All Eventi",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/eventi",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "eventi"]
+            }
+          }
+        },
+        {
+          "name": "Create Evento (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{authToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titolo\": \"Sagra del Paese\",\n  \"descrizione\": \"La tradizionale sagra estiva con stand gastronomici, musica dal vivo e giochi per bambini.\",\n  \"dataInizio\": \"2026-07-15\",\n  \"dataFine\": \"2026-07-17\",\n  \"oraInizio\": \"18:00\",\n  \"oraFine\": \"01:00\",\n  \"luogo\": \"Piazza Centrale\",\n  \"indirizzo\": \"Piazza Centrale 1\",\n  \"categoria\": \"Cultura\",\n  \"organizzatore\": \"Comune\",\n  \"suggerito\": true,\n  \"pubblicato\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/eventi",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "eventi"]
+            }
+          }
+        },
+        {
+          "name": "Partecipa Evento",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{authToken}}"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/eventi/:id/partecipa",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "eventi", ":id", "partecipa"],
+              "variable": [{"key": "id", "value": "EVENTO_ID"}]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Ristoranti & Recensioni",
+      "item": [
+        {
+          "name": "Get All Ristoranti",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/ristoranti",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ristoranti"]
+            }
+          }
+        },
+        {
+          "name": "Create Ristorante (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{authToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Trattoria da Gino\",\n  \"descrizione\": \"Cucina tradizionale italiana con ingredienti locali\",\n  \"categoria\": \"Tradizionale\",\n  \"indirizzo\": \"Via Roma 15\",\n  \"telefono\": \"0123456789\",\n  \"fasciaDiPrezzo\": \"€€\",\n  \"pubblicato\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ristoranti",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ristoranti"]
+            }
+          }
+        },
+        {
+          "name": "Create Recensione",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{authToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ristorante\": \"RISTORANTE_ID\",\n  \"rating\": 5,\n  \"commento\": \"Ottimo cibo, servizio eccellente. Ci tornerò sicuramente!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/recensioni",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recensioni"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Commenti",
+      "item": [
+        {
+          "name": "Get Commenti Notizia",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/commenti?tipo=notizia&riferimento=NOTIZIA_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "commenti"],
+              "query": [
+                {"key": "tipo", "value": "notizia"},
+                {"key": "riferimento", "value": "NOTIZIA_ID"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Commento",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{authToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contenuto\": \"Bellissima iniziativa! Complimenti all'amministrazione.\",\n  \"tipoRiferimento\": \"notizia\",\n  \"riferimento\": \"NOTIZIA_ID\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/commenti",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "commenti"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Luoghi",
+      "item": [
+        {
+          "name": "Get All Luoghi",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/luoghi",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "luoghi"]
+            }
+          }
+        },
+        {
+          "name": "Create Luogo (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{authToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Castello Medievale\",\n  \"descrizione\": \"Castello del XIII secolo perfettamente conservato\",\n  \"categoria\": \"Monumento\",\n  \"indirizzo\": \"Piazza Castello 1\",\n  \"orari\": \"09:00-18:00\",\n  \"prezzo\": \"€5\",\n  \"suggerito\": true,\n  \"pubblicato\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/luoghi",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "luoghi"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Offerte",
+      "item": [
+        {
+          "name": "Get All Offerte",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/offerte",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "offerte"]
+            }
+          }
+        },
+        {
+          "name": "Create Offerta (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{authToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titolo\": \"Sconto 20% su tutti i prodotti\",\n  \"descrizione\": \"Per tutto il mese di maggio, sconto del 20% su tutti gli articoli in negozio\",\n  \"nomeNegozio\": \"Libreria Centrale\",\n  \"categoria\": \"Libri\",\n  \"sconto\": \"20%\",\n  \"dataInizio\": \"2026-05-01\",\n  \"dataFine\": \"2026-05-31\",\n  \"pubblicato\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/offerte",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "offerte"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Farmacie",
+      "item": [
+        {
+          "name": "Get All Farmacie",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/farmacie",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "farmacie"]
+            }
+          }
+        },
+        {
+          "name": "Get Farmacie di Turno",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/farmacie/turno",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "farmacie", "turno"]
+            }
+          }
+        },
+        {
+          "name": "Create Farmacia (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{authToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Farmacia Centrale\",\n  \"indirizzo\": \"Piazza Duomo 10\",\n  \"telefono\": \"0987654321\",\n  \"diTurno\": true,\n  \"orari\": \"08:30-19:30\",\n  \"pubblicato\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/farmacie",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "farmacie"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "9. Salvati",
+      "item": [
+        {
+          "name": "Get My Salvati",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{authToken}}"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/salvati",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "salvati"]
+            }
+          }
+        },
+        {
+          "name": "Toggle Salvato",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{authToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"notizia\",\n  \"riferimento\": \"NOTIZIA_ID\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/salvati/toggle",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "salvati", "toggle"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "10. Notifiche",
+      "item": [
+        {
+          "name": "Get My Notifiche",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{authToken}}"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifiche",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifiche"]
+            }
+          }
+        },
+        {
+          "name": "Count Non Lette",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{authToken}}"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifiche/count",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifiche", "count"]
+            }
+          }
+        },
+        {
+          "name": "Leggi Tutte",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{authToken}}"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifiche/leggi-tutte",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifiche", "leggi-tutte"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "11. Admin",
+      "item": [
+        {
+          "name": "Get Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{authToken}}"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "stats"]
+            }
+          }
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{authToken}}"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/utenti",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "utenti"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

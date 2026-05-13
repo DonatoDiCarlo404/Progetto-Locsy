@@ -13,12 +13,10 @@ const farmaciaSchema = new mongoose.Schema({
   coordinate: {
     type: {
       type: String,
-      enum: ['Point'],
-      default: 'Point'
+      enum: ['Point']
     },
     coordinates: {
-      type: [Number], // [longitude, latitude]
-      required: false
+      type: [Number] // [longitude, latitude]
     }
   },
   telefono: {
@@ -44,8 +42,8 @@ const farmaciaSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Index geospaziale
-farmaciaSchema.index({ coordinate: '2dsphere' });
+// Index geospaziale (sparse = ignora documenti senza coordinate)
+farmaciaSchema.index({ coordinate: '2dsphere' }, { sparse: true });
 
 // Index per filtrare farmacie di turno
 farmaciaSchema.index({ turno: 1, dataTurno: 1 });

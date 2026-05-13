@@ -21,8 +21,8 @@ const notiziaSchema = new mongoose.Schema({
   },
   categoria: {
     type: String,
-    enum: ['Avviso', 'Evento', 'Lavori', 'Servizi', 'Cultura', 'Sport', 'Altro'],
-    default: 'Avviso'
+    enum: ['Viabilità', 'Vita cittadina', 'Istituzionale', 'Cultura'],
+    required: [true, 'La categoria è obbligatoria']
   },
   autore: {
     type: mongoose.Schema.Types.ObjectId,
@@ -48,7 +48,11 @@ const notiziaSchema = new mongoose.Schema({
   linkEsterno: {
     type: String,
     default: ''
-  }
+  },
+  likes: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }]
 }, {
   timestamps: true
 });

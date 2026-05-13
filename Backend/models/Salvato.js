@@ -18,8 +18,7 @@ const salvatoSchema = new mongoose.Schema({
   },
   tipoModel: {
     type: String,
-    enum: ['Notizia', 'Evento', 'Ristorante', 'Luogo', 'Offerta'],
-    required: true
+    enum: ['Notizia', 'Evento', 'Ristorante', 'Luogo', 'Offerta']
   }
 }, {
   timestamps: true
@@ -31,8 +30,8 @@ salvatoSchema.index({ utente: 1, tipo: 1, riferimento: 1 }, { unique: true });
 // Index per query utente
 salvatoSchema.index({ utente: 1, tipo: 1, createdAt: -1 });
 
-// Pre-save per impostare tipoModel
-salvatoSchema.pre('save', function(next) {
+// Pre-save per impostare tipoModel automaticamente
+salvatoSchema.pre('save', async function() {
   const tipoMap = {
     'notizia': 'Notizia',
     'evento': 'Evento',
@@ -41,7 +40,6 @@ salvatoSchema.pre('save', function(next) {
     'offerta': 'Offerta'
   };
   this.tipoModel = tipoMap[this.tipo];
-  next();
 });
 
 module.exports = mongoose.model('Salvato', salvatoSchema);

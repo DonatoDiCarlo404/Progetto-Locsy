@@ -18,7 +18,7 @@ const offertaSchema = new mongoose.Schema({
   },
   categoria: {
     type: String,
-    enum: ['Alimentari', 'Abbigliamento', 'Elettronica', 'Bellezza', 'Casa', 'Sport', 'Altro'],
+    enum: ['Alimentari', 'Abbigliamento', 'Elettronica', 'Bellezza', 'Casa', 'Sport', 'Libri', 'Farmacia', 'Ristorante', 'Servizi', 'Altro'],
     default: 'Altro'
   },
   immagine: {

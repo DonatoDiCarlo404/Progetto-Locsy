@@ -29,12 +29,10 @@ const luogoSchema = new mongoose.Schema({
   coordinate: {
     type: {
       type: String,
-      enum: ['Point'],
-      default: 'Point'
+      enum: ['Point']
     },
     coordinates: {
-      type: [Number], // [longitude, latitude]
-      required: false
+      type: [Number] // [longitude, latitude]
     }
   },
   orari: {
@@ -65,8 +63,8 @@ const luogoSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Index geospaziale
-luogoSchema.index({ coordinate: '2dsphere' });
+// Index geospaziale (sparse = ignora documenti senza coordinate)
+luogoSchema.index({ coordinate: '2dsphere' }, { sparse: true });
 
 // Index per filtrare luoghi suggeriti
 luogoSchema.index({ suggerito: 1, pubblicato: 1 });

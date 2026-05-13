@@ -100,7 +100,12 @@ echo "node_modules\n.env\n.DS_Store" > .gitignore
 
 ---
 
-## 🔧 FASE 1: BACKEND - SETUP BASE (Settimane 2-3)
+## 🔧 FASE 1: BACKEND - SETUP BASE (Settimane 2-3) ✅ COMPLETATA
+
+> **🎯 CHECKPOINT FASE 1 - Data completamento: 5 Maggio 2026**  
+> **Status**: ✅ Backend setup completato  
+> **Struttura**: Cartelle, dipendenze, middleware tutti configurati  
+> **Server**: Express funzionante con CORS, Helmet, Rate Limiting
 
 ### 1.1 Struttura Backend
 ```bash
@@ -207,7 +212,12 @@ OPENWEATHER_API_KEY=
 
 ---
 
-## 🗄️ FASE 2: DATABASE MODELS (Settimana 4)
+## 🗄️ FASE 2: DATABASE MODELS (Settimana 4) ✅ COMPLETATA
+
+> **🎯 CHECKPOINT FASE 2 - Data completamento: 6 Maggio 2026**  
+> **Status**: ✅ Tutti i 13 models creati e funzionanti  
+> **Models**: User, Segnalazione, Notizia, Evento, Ristorante, Recensione, Offerta, Luogo, Commento, Salvato, Notifica, Farmacia, ImpostazioniComune  
+> **Features**: Schema validation, relationships, indexes, default values
 
 ### 2.1 User Model
 ```javascript
@@ -524,7 +534,12 @@ OPENWEATHER_API_KEY=
 
 ---
 
-## 🔐 FASE 3: AUTENTICAZIONE (Settimana 5)
+## 🔐 FASE 3: AUTENTICAZIONE (Settimana 5) ✅ COMPLETATA
+
+> **🎯 CHECKPOINT FASE 3 - Data completamento: 6 Maggio 2026**  
+> **Status**: ✅ Sistema autenticazione completo  
+> **Features**: JWT tokens, password hashing (bcrypt), middleware auth, middleware admin  
+> **Endpoints**: /register, /login, /me, /update-profile, /change-password
 
 ### 3.1 Middleware Auth
 - [ ] Creare `middleware/auth.js` per verificare JWT
@@ -858,6 +873,211 @@ OPENWEATHER_API_KEY=
 
 **DELETE /api/admin/commenti/:id**
 - [x] Moderazione commenti
+
+### 4.14 API Esterne e Integrazioni 🌐
+
+> **📋 STACK DATI CONSIGLIATO PER LOCSY**
+
+| Tipo Dato | Fonte | API/Metodo | Costo |
+|-----------|-------|------------|-------|
+| **Farmacie** | OpenStreetMap + Ministero Salute | Overpass API (OSM) | ✅ Gratuito |
+| **Ospedali** | OpenStreetMap | Overpass API (OSM) | ✅ Gratuito |
+| **Monumenti** | Wikipedia + Dati Comune | MediaWiki API + Seed manuale | ✅ Gratuito |
+| **Attività Commerciali** | Creator verificati | Dashboard interna | - |
+| **Eventi** | Dashboard creator | Sistema interno | - |
+| **Meteo** | OpenWeatherMap | Current Weather API | ✅ Free: 1000 calls/giorno |
+| **Comuni** | ISTAT + DatiComuni.it | REST API pubbliche | ✅ Gratuito |
+| **Mappe** | OpenStreetMap | Leaflet.js + OSM tiles | ✅ Gratuito |
+| **Geocoding** | Nominatim | Nominatim API (OSM) | ✅ Gratuito (1 req/sec) |
+
+#### API Meteo - OpenWeatherMap
+```javascript
+// GET /api/meteo
+// Endpoint: https://api.openweathermap.org/data/2.5/weather
+const getMeteo = async (lat, lon) => {
+  const apiKey = process.env.OPENWEATHER_API_KEY;
+  const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=it&appid=${apiKey}`;
+  const response = await fetch(url);
+  return response.json();
+};
+
+// Free Tier: 1000 calls/giorno
+// Signup: https://openweathermap.org/api
+```
+
+#### API Geocoding - Nominatim (OpenStreetMap)
+```javascript
+// Reverse Geocoding: coordinate → indirizzo
+const reverseGeocode = async (lat, lon) => {
+  const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
+  const response = await fetch(url, {
+    headers: { 'User-Agent': 'Locsy-App' } // Obbligatorio!
+  });
+  return response.json();
+};
+
+// Forward Geocoding: indirizzo → coordinate
+const forwardGeocode = async (address) => {
+  const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+  const response = await fetch(url, {
+    headers: { 'User-Agent': 'Locsy-App' }
+  });
+  return response.json();
+};
+
+// Limiti: 1 richiesta al secondo, no API key necessaria
+// Docs: https://nominatim.org/release-docs/latest/api/Overview/
+```
+
+#### API Dati Comuni - ISTAT
+```javascript
+// GET /api/comuni/:codiceIstat
+// Database comuni italiani: https://github.com/matteocontrini/comuni-json
+// Alternative: https://daticomuni.it/api
+
+// Seed database con file JSON statico
+const comuniData = require('./data/comuni.json');
+// Include: nome, provincia, regione, CAP, coordinate, popolazione
+```
+
+#### API Farmacie - OpenStreetMap
+```javascript
+// Overpass API per query POI (Points of Interest)
+const getFarmacie = async (lat, lon, radius = 5000) => {
+  const query = `
+    [out:json];
+    node["amenity"="pharmacy"](around:${radius},${lat},${lon});
+    out body;
+  `;
+  
+  const response = await fetch('https://overpass-api.de/api/interpreter', {
+    method: 'POST',
+    body: query
+  });
+  
+  return response.json();
+};
+
+// Gratuito, no API key
+// Docs: https://wiki.openstreetmap.org/wiki/Overpass_API
+```
+
+#### Integrazione Ministero Salute (Farmacie di Turno)
+```javascript
+// Purtroppo non esiste API pubblica unificata
+// Soluzioni:
+// 1. Scraping sito regionale (no consigliato)
+// 2. Input manuale da dashboard admin
+// 3. Integrazione con sistemi locali ASL
+
+// Modello DB con campo "diTurno" gestito manualmente
+```
+
+#### API Mappe - Leaflet + OpenStreetMap
+```javascript
+// Frontend: React-Leaflet
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+
+const Map = ({ center, markers }) => (
+  <MapContainer center={center} zoom={13}>
+    <TileLayer
+      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
+    />
+    {markers.map(marker => (
+      <Marker key={marker.id} position={marker.position}>
+        <Popup>{marker.name}</Popup>
+      </Marker>
+    ))}
+  </MapContainer>
+);
+
+// Gratuito, no API key, tile server pubblico
+```
+
+#### Rate Limiting e Caching
+```javascript
+// Backend caching per ridurre chiamate API
+const NodeCache = require('node-cache');
+const meteoCache = new NodeCache({ stdTTL: 3600 }); // 1 ora
+
+const getMeteoWithCache = async (lat, lon) => {
+  const key = `meteo_${lat}_${lon}`;
+  const cached = meteoCache.get(key);
+  
+  if (cached) return cached;
+  
+  const data = await getMeteo(lat, lon);
+  meteoCache.set(key, data);
+  return data;
+};
+```
+
+#### TODO: Implementazione API Esterne
+- [ ] Registrazione OpenWeatherMap (API key)
+- [ ] Implementare endpoint /api/meteo con caching
+- [ ] Implementare helper geocoding (Nominatim)
+- [ ] Seed database comuni italiani (JSON statico)
+- [ ] Creare script import farmacie da OSM
+- [ ] Testare limiti rate Nominatim (1 req/sec)
+- [ ] Documentare User-Agent obbligatorio per OSM
+
+### 4.15 Testing e Validazione ✅
+
+> **🎯 CHECKPOINT TESTING - Data completamento: 13 Maggio 2026**  
+> **Status**: ✅ Testing completo di tutte le API implementate  
+> **Tools**: Postman Collection con 60+ test organizzati  
+> **Ambiente**: MongoDB Atlas, server Express.js su porta 5000  
+> **Credenziali Admin**: admin@locsy.it / admin123  
+> **Credenziali Test**: mario.rossi@test.com / password123
+
+#### Postman Collection Completa
+- [x] **0. Health Check**: Server status endpoint
+- [x] **1. Auth**: Register, Login, Get Me (3 test)
+- [x] **2. Notizie**: Get All, Get by ID, Create, Like (4+ test)
+- [x] **3. Eventi**: Get All, Calendario, Create, Partecipa (4+ test)
+- [x] **4. Ristoranti & Recensioni**: CRUD ristoranti, Create recensione (5+ test)
+- [x] **5. Commenti**: Get by riferimento, Create, Delete, Like, Reply (5+ test)
+- [x] **6. Luoghi**: Get All, Get by ID, Create (3+ test)
+- [x] **7. Offerte**: Get All, Get by ID, Create (3+ test)
+- [x] **8. Farmacie**: Get All, Get Turno, Create (3+ test)
+- [x] **9. Salvati**: Get My Salvati, Toggle Salvato (2+ test)
+- [x] **10. Notifiche**: Get Notifiche, Count, Leggi Tutte (3+ test)
+- [x] **11. Admin**: Get Stats, Get All Users, Ban User (3+ test)
+
+**Features Postman Collection:**
+- Auto-save JWT token dopo login
+- Variabili globali: {{baseUrl}}, {{authToken}}
+- Test scripts per validazione responses
+- Organizzazione per moduli funzionali
+
+#### Bug Fixati Durante Testing
+1. ✅ **Admin Password Hash**: Rimosso double-hashing in createAdmin.js
+2. ✅ **Notizia Enum**: Aggiornate categorie a ['Viabilità','Vita cittadina','Istituzionale','Cultura']
+3. ✅ **Notizia Likes**: Aggiunto campo `likes: [ObjectId]` mancante
+4. ✅ **Coordinate Geospaziali**: Rimosso `default:'Point'` da 5 models (Evento, Ristorante, Luogo, Farmacia, Segnalazione), aggiunto `sparse:true` agli indici 2dsphere
+5. ✅ **Commento Validation**: Rimosso `required:true` da `tipoRiferimentoModel` (popolato da hook)
+6. ✅ **Mongoose 9.x Hooks**: Convertiti pre-save hooks da `function(next)` a `async function()` (Commento, Salvato)
+7. ✅ **Offerta Enum**: Aggiunte categorie ['Libri','Farmacia','Ristorante','Servizi']
+8. ✅ **Salvato Validation**: Rimosso `required:true` da `tipoModel`, convertito pre-save hook
+
+#### File di Configurazione Creati
+- [x] **Backend/.env**: MongoDB Atlas URI, JWT secret, environment settings
+- [x] **Backend/scripts/createAdmin.js**: Script per creare utente admin
+- [x] **Locsy_API_Collection.postman_collection.json**: Suite test completa
+
+#### Validazioni Completate
+- [x] Autenticazione JWT funzionante
+- [x] CRUD operations su tutti i models principali
+- [x] Middleware auth e admin verificati
+- [x] Rate limiting testato
+- [x] Error handling centralizzato
+- [x] Relazioni tra models (populate) funzionanti
+- [x] Like/Toggle functionality verificata
+- [x] Geospatial queries compatibili
+- [x] Aggregazioni (calendario eventi, rating ristoranti)
+
+**Risultato**: Tutte le 60+ API testate funzionano correttamente. Backend pronto per integrazione frontend.
 
 ---
 

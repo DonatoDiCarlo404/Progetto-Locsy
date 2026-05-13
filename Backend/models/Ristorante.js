@@ -29,12 +29,10 @@ const ristoranteSchema = new mongoose.Schema({
   coordinate: {
     type: {
       type: String,
-      enum: ['Point'],
-      default: 'Point'
+      enum: ['Point']
     },
     coordinates: {
-      type: [Number], // [longitude, latitude]
-      required: false
+      type: [Number] // [longitude, latitude]
     }
   },
   telefono: {
@@ -86,8 +84,8 @@ const ristoranteSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Index geospaziale
-ristoranteSchema.index({ coordinate: '2dsphere' });
+// Index geospaziale (sparse = ignora documenti senza coordinate)
+ristoranteSchema.index({ coordinate: '2dsphere' }, { sparse: true });
 
 // Index per filtrare per categoria e rating
 ristoranteSchema.index({ categoria: 1, ratingMedio: -1 });

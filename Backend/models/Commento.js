@@ -23,8 +23,7 @@ const commentoSchema = new mongoose.Schema({
   },
   tipoRiferimentoModel: {
     type: String,
-    enum: ['Notizia', 'Evento'],
-    required: true
+    enum: ['Notizia', 'Evento']
   },
   likes: [{
     type: mongoose.Schema.Types.ObjectId,
@@ -48,14 +47,13 @@ commentoSchema.index({ tipoRiferimento: 1, riferimento: 1, createdAt: -1 });
 commentoSchema.index({ autore: 1, createdAt: -1 });
 commentoSchema.index({ commentoPadre: 1 });
 
-// Pre-save per impostare tipoRiferimentoModel
-commentoSchema.pre('save', function(next) {
+// Pre-save per impostare tipoRiferimentoModel automaticamente
+commentoSchema.pre('save', async function() {
   if (this.tipoRiferimento === 'notizia') {
     this.tipoRiferimentoModel = 'Notizia';
   } else if (this.tipoRiferimento === 'evento') {
     this.tipoRiferimentoModel = 'Evento';
   }
-  next();
 });
 
 module.exports = mongoose.model('Commento', commentoSchema);
