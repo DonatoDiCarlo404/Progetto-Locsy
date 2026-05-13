@@ -1,13 +1,12 @@
-import './App.css'
-import AuthTest from './components/common/AuthTest'
+// App - Componente principale dell'applicazione
+// Configura il router per la navigazione tra le pagine
 
-// Componente principale dell'app
+import { RouterProvider } from 'react-router-dom';
+import { router } from './router';
+import './App.css';
+
 function App() {
-  return (
-    <div className="App">
-      <AuthTest />
-    </div>
-  )
+  return <RouterProvider router={router} />;
 }
 
-export default App
+export default App;

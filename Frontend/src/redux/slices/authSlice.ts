@@ -3,9 +3,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { User, AuthState } from '../../types';
-
-// URL del backend
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+import * as authService from '../../services/authService';
 
 // Stato iniziale - recupero token e user dal localStorage se presenti
 const userFromStorage = localStorage.getItem('user');
@@ -25,17 +23,7 @@ export const register = createAsyncThunk(
   'auth/register',
   async (userData: { nome: string; cognome: string; email: string; password: string }, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${API_URL}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        return rejectWithValue(data.message || 'Errore durante la registrazione');
-      }
+      const data = await authService.register(userData);
 
       // Salva token e user nel localStorage
       localStorage.setItem('token', data.token);
@@ -43,7 +31,7 @@ export const register = createAsyncThunk(
 
       return data;
     } catch (error: any) {
-      return rejectWithValue(error.message || 'Errore di rete');
+      return rejectWithValue(error.message || 'Errore durante la registrazione');
     }
   }
 );
@@ -53,17 +41,7 @@ export const login = createAsyncThunk(
   'auth/login',
   async (credentials: { email: string; password: string }, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${API_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(credentials),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        return rejectWithValue(data.message || 'Credenziali non valide');
-      }
+      const data = await authService.login(credentials);
 
       // Salvo token e user nel localStorage
       localStorage.setItem('token', data.token);
@@ -71,7 +49,7 @@ export const login = createAsyncThunk(
 
       return data;
     } catch (error: any) {
-      return rejectWithValue(error.message || 'Errore di rete');
+      return rejectWithValue(error.message || 'Credenziali non valide');
     }
   }
 );
@@ -89,24 +67,14 @@ export const getMe = createAsyncThunk(
         return rejectWithValue('Nessun token trovato');
       }
 
-      const response = await fetch(`${API_URL}/auth/me`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        return rejectWithValue(data.message || 'Token non valido');
-      }
+      const data = await authService.getMe();
 
       // Aggiorno user nel localStorage
       localStorage.setItem('user', JSON.stringify(data.user));
 
       return data.user;
     } catch (error: any) {
-      return rejectWithValue(error.message || 'Errore di rete');
+      return rejectWithValue(error.message || 'Token non valido');
     }
   }
 );
