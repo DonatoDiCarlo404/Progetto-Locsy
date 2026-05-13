@@ -1,0 +1,13 @@
+/* AuthTest Component Styles */
+.auth-test-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.auth-test-error {
+  color: red;
+}
+
+.auth-test-button {
+  margin-right: 10px;
+}

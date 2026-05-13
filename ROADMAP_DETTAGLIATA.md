@@ -1227,9 +1227,13 @@ VITE_OPENWEATHER_API_KEY=
 ```
 
 **Redux Store:**
-- [ ] Setup store con Redux Toolkit
-- [ ] Configurare redux-persist (mantiene auth)
-- [ ] Creare slices per: auth, segnalazioni, notizie, eventi, ristoranti, salvati, notifiche
+- [x] Setup store con Redux Toolkit
+- [x] Configurare redux-persist (mantiene auth) - **Fixed storage adapter per Vite+TS**
+- [x] Creare TypeScript types (User, AuthState, Notizia, Evento, etc.)
+- [x] Creare authSlice con async thunks: register, login, getMe, logout
+- [x] Custom hooks Redux tipizzati: useAppDispatch, useAppSelector
+- [x] Test Redux auth funzionante (AuthTest component)
+- [ ] Creare slices per: segnalazioni, notizie, eventi, ristoranti, salvati, notifiche
 
 **API Service (fetch nativa):**
 ```javascript
@@ -1285,6 +1289,36 @@ export const uploadFile = async (endpoint, file) => {
 - [ ] Import Bootstrap CSS
 - [ ] Personalizza colori (variabili CSS)
 - [ ] Tema comune (colori primario/secondario)
+
+---
+
+> **🎯 CHECKPOINT FASE 5.1-5.2 - Data completamento: 13 Maggio 2026**  
+> **Status**: ✅ Frontend setup completo, Redux Store configurato e testato  
+> **Stack**: React 19 + Vite 8 + TypeScript 6 + Redux Toolkit 2  
+> **Dipendenze**: 14 librerie installate (router, redux, bootstrap, leaflet, etc.)  
+> **Redux**: authSlice con login/register/logout, redux-persist con storage adapter custom  
+> **TypeScript**: types/index.ts con 13 interfacce, strict mode abilitato  
+> **Test**: AuthTest component verifica login/logout funzionante con backend  
+> **Fix Critici**: Redux-persist storage adapter per compatibilità Vite+TS strict mode  
+
+**Completato:**
+- [x] Installazione dipendenze (react-router-dom, redux toolkit, bootstrap, leaflet, etc.)
+- [x] Creazione struttura cartelle (components/common, redux/slices, hooks, types)
+- [x] File .env con VITE_API_URL
+- [x] TypeScript types completi (User, AuthState, Notizia, Evento, Ristorante, etc.)
+- [x] Redux store con redux-persist configurato (storage adapter custom)
+- [x] authSlice con register/login/getMe/logout async thunks
+- [x] Custom hooks tipizzati (useAppDispatch, useAppSelector)
+- [x] AuthTest component per validazione Redux auth
+- [x] Test login/register/logout funzionante con backend
+
+**Prossimi Step:**
+- [ ] Creare API service layer (services/api.ts con fetchAPI helper)
+- [ ] Setup React Router con PrivateRoute/AdminRoute
+- [ ] Altri Redux slices (segnalazioni, notizie, eventi, ristoranti, salvati, notifiche)
+- [ ] Layout components (Navbar superiore, Navbar inferiore sticky)
+
+---
 
 ### 5.3 Layout Base (Settimana 11)
 
